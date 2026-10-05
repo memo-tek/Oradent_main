@@ -1,0 +1,50 @@
+[
+  { "code": "D0120", "description": "Periodic oral evaluation - established patient", "category": "diagnostic", "fee": 55 },
+  { "code": "D0150", "description": "Comprehensive oral evaluation - new or established patient", "category": "diagnostic", "fee": 80 },
+  { "code": "D0210", "description": "Intraoral - complete series of radiographic images", "category": "diagnostic", "fee": 160 },
+  { "code": "D0220", "description": "Intraoral - periapical first radiographic image", "category": "diagnostic", "fee": 32 },
+  { "code": "D0272", "description": "Bitewings - two radiographic images", "category": "diagnostic", "fee": 52 },
+  { "code": "D0274", "description": "Bitewings - four radiographic images", "category": "diagnostic", "fee": 70 },
+  { "code": "D0330", "description": "Panoramic radiographic image", "category": "diagnostic", "fee": 135 },
+
+  { "code": "D1110", "description": "Prophylaxis - adult", "category": "preventive", "fee": 110 },
+  { "code": "D1120", "description": "Prophylaxis - child", "category": "preventive", "fee": 75 },
+  { "code": "D1206", "description": "Topical application of fluoride varnish", "category": "preventive", "fee": 35 },
+  { "code": "D1351", "description": "Sealant - per tooth", "category": "preventive", "fee": 48 },
+
+  { "code": "D2140", "description": "Amalgam - one surface, primary or permanent", "category": "restorative", "fee": 145 },
+  { "code": "D2150", "description": "Amalgam - two surfaces, primary or permanent", "category": "restorative", "fee": 185 },
+  { "code": "D2160", "description": "Amalgam - three surfaces, primary or permanent", "category": "restorative", "fee": 220 },
+  { "code": "D2330", "description": "Resin-based composite - one surface, anterior", "category": "restorative", "fee": 165 },
+  { "code": "D2331", "description": "Resin-based composite - two surfaces, anterior", "category": "restorative", "fee": 200 },
+  { "code": "D2391", "description": "Resin-based composite - one surface, posterior", "category": "restorative", "fee": 185 },
+  { "code": "D2392", "description": "Resin-based composite - two surfaces, posterior", "category": "restorative", "fee": 245 },
+  { "code": "D2393", "description": "Resin-based composite - three surfaces, posterior", "category": "restorative", "fee": 300 },
+
+  { "code": "D2740", "description": "Crown - porcelain/ceramic substrate", "category": "restorative", "fee": 1200 },
+  { "code": "D2750", "description": "Crown - porcelain fused to high noble metal", "category": "restorative", "fee": 1100 },
+  { "code": "D2950", "description": "Core buildup, including any pins when required", "category": "restorative", "fee": 275 },
+
+  { "code": "D3310", "description": "Endodontic therapy, anterior tooth", "category": "endodontic", "fee": 800 },
+  { "code": "D3320", "description": "Endodontic therapy, premolar tooth", "category": "endodontic", "fee": 900 },
+  { "code": "D3330", "description": "Endodontic therapy, molar tooth", "category": "endodontic", "fee": 1150 },
+
+  { "code": "D4341", "description": "Periodontal scaling and root planing - four or more teeth per quadrant", "category": "periodontic", "fee": 240 },
+  { "code": "D4910", "description": "Periodontal maintenance", "category": "periodontic", "fee": 150 },
+
+  { "code": "D5110", "description": "Complete denture - maxillary", "category": "prosthodontic", "fee": 1850 },
+  { "code": "D5120", "description": "Complete denture - mandibular", "category": "prosthodontic", "fee": 1850 },
+
+  { "code": "D6010", "description": "Surgical placement of implant body - endosteal implant", "category": "implant", "fee": 2250 },
+  { "code": "D6058", "description": "Abutment supported porcelain/ceramic crown", "category": "implant", "fee": 750 },
+  { "code": "D6065", "description": "Implant supported porcelain/ceramic crown", "category": "implant", "fee": 1500 },
+
+  { "code": "D7140", "description": "Extraction, erupted tooth or exposed root", "category": "oral_surgery", "fee": 175 },
+  { "code": "D7210", "description": "Extraction, erupted tooth requiring removal of bone and/or sectioning of tooth", "category": "oral_surgery", "fee": 300 },
+  { "code": "D7240", "description": "Extraction, impacted tooth - completely bony", "category": "oral_surgery", "fee": 425 },
+  { "code": "D7241", "description": "Extraction, impacted tooth - completely bony with unusual surgical complications", "category": "oral_surgery", "fee": 425 },
+
+  { "code": "D9110", "description": "Palliative (emergency) treatment of dental pain", "category": "adjunctive", "fee": 115 },
+  { "code": "D9230", "description": "Inhalation of nitrous oxide / analgesia, anxiolysis", "category": "adjunctive", "fee": 55 },
+  { "code": "D9310", "description": "Consultation - diagnostic service provided by dentist other than requesting dentist", "category": "adjunctive", "fee": 115 }
+]

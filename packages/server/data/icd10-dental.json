@@ -1,0 +1,39 @@
+[
+  { "code": "K02.51", "description": "Dental caries on pit and fissure surface limited to enamel", "category": "caries" },
+  { "code": "K02.52", "description": "Dental caries on pit and fissure surface penetrating into dentin", "category": "caries" },
+  { "code": "K02.53", "description": "Dental caries on pit and fissure surface penetrating into pulp", "category": "caries" },
+  { "code": "K02.61", "description": "Dental caries on smooth surface limited to enamel", "category": "caries" },
+  { "code": "K02.62", "description": "Dental caries on smooth surface penetrating into dentin", "category": "caries" },
+  { "code": "K02.63", "description": "Dental caries on smooth surface penetrating into pulp", "category": "caries" },
+  { "code": "K02.9", "description": "Dental caries, unspecified", "category": "caries" },
+
+  { "code": "K04.0", "description": "Pulpitis", "category": "pulp_periapical" },
+  { "code": "K04.01", "description": "Reversible pulpitis", "category": "pulp_periapical" },
+  { "code": "K04.02", "description": "Irreversible pulpitis", "category": "pulp_periapical" },
+  { "code": "K04.1", "description": "Necrosis of pulp", "category": "pulp_periapical" },
+  { "code": "K04.4", "description": "Acute apical periodontitis of pulpal origin", "category": "pulp_periapical" },
+  { "code": "K04.5", "description": "Chronic apical periodontitis", "category": "pulp_periapical" },
+  { "code": "K04.6", "description": "Periapical abscess with sinus", "category": "pulp_periapical" },
+  { "code": "K04.7", "description": "Periapical abscess without sinus", "category": "pulp_periapical" },
+
+  { "code": "K05.0", "description": "Acute gingivitis", "category": "periodontal" },
+  { "code": "K05.10", "description": "Chronic gingivitis, plaque induced", "category": "periodontal" },
+  { "code": "K05.20", "description": "Aggressive periodontitis, unspecified", "category": "periodontal" },
+  { "code": "K05.30", "description": "Chronic periodontitis, unspecified", "category": "periodontal" },
+  { "code": "K05.311", "description": "Chronic periodontitis, localized, slight", "category": "periodontal" },
+  { "code": "K05.312", "description": "Chronic periodontitis, localized, moderate", "category": "periodontal" },
+  { "code": "K05.313", "description": "Chronic periodontitis, localized, severe", "category": "periodontal" },
+
+  { "code": "K08.101", "description": "Complete loss of teeth due to trauma, class I", "category": "tooth_loss" },
+  { "code": "K08.109", "description": "Complete loss of teeth due to trauma, unspecified class", "category": "tooth_loss" },
+  { "code": "K08.404", "description": "Partial loss of teeth due to periodontal diseases, class IV", "category": "tooth_loss" },
+  { "code": "K08.3", "description": "Retained dental root", "category": "tooth_loss" },
+  { "code": "K00.6", "description": "Disturbances in tooth eruption", "category": "eruption" },
+
+  { "code": "K03.81", "description": "Cracked tooth", "category": "fracture" },
+  { "code": "S02.5", "description": "Fracture of tooth (traumatic)", "category": "fracture" },
+  { "code": "M26.60", "description": "Temporomandibular joint disorder, unspecified", "category": "tmj" },
+
+  { "code": "Z01.20", "description": "Encounter for dental examination and cleaning without abnormal findings", "category": "encounter" },
+  { "code": "Z01.21", "description": "Encounter for dental examination and cleaning with abnormal findings", "category": "encounter" }
+]

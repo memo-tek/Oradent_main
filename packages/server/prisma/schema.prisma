@@ -1,0 +1,539 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════ PRACTICE & AUTH ═══════════════════
+
+model Practice {
+  id          String            @id @default(cuid())
+  name        String
+  address     String
+  phone       String
+  email       String
+  logo        String?
+  taxId       String?
+  npi         String?
+  providers   Provider[]
+  chairs      Chair[]
+  feeSchedule FeeScheduleItem[]
+  settings    PracticeSettings?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model PracticeSettings {
+  id                  String   @id @default(cuid())
+  practiceId          String   @unique
+  practice            Practice @relation(fields: [practiceId], references: [id])
+  appointmentDuration Int      @default(30)
+  workingHoursStart   String   @default("08:00")
+  workingHoursEnd     String   @default("17:00")
+  workingDays         Int[]    @default([1, 2, 3, 4, 5])
+  reminderHoursBefore Int      @default(24)
+  currency            String   @default("USD")
+  anthropicKey        String?
+}
+
+model Provider {
+  id            String         @id @default(cuid())
+  practiceId    String
+  practice      Practice       @relation(fields: [practiceId], references: [id])
+  email         String         @unique
+  passwordHash  String
+  name          String
+  title         String         @default("DDS")
+  role          ProviderRole   @default(DENTIST)
+  npi           String?
+  licenseNumber String?
+  color         String         @default("#6366f1")
+  isActive      Boolean        @default(true)
+  appointments  Appointment[]
+  treatments    Treatment[]
+  notes         ClinicalNote[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+enum ProviderRole {
+  OWNER
+  DENTIST
+  HYGIENIST
+  ASSISTANT
+  FRONT_DESK
+}
+
+model Chair {
+  id           String        @id @default(cuid())
+  practiceId   String
+  practice     Practice      @relation(fields: [practiceId], references: [id])
+  name         String
+  isActive     Boolean       @default(true)
+  appointments Appointment[]
+}
+
+// ═══════════════════ PATIENTS ═══════════════════
+
+model Patient {
+  id                 String           @id @default(cuid())
+  practiceId         String
+  firstName          String
+  lastName           String
+  dateOfBirth        DateTime
+  gender             String?
+  email              String?
+  phone              String
+  phoneSecondary     String?
+  address            String?
+  city               String?
+  state              String?
+  zipCode            String?
+  emergencyName      String?
+  emergencyPhone     String?
+  emergencyRelation  String?
+  medicalHistory     MedicalHistory?
+  insurancePrimary   InsuranceInfo?   @relation("PrimaryInsurance")
+  insuranceSecondary InsuranceInfo?   @relation("SecondaryInsurance")
+  dentalChart        ToothCondition[]
+  perioChart         PerioReading[]
+  appointments       Appointment[]
+  treatments         Treatment[]
+  treatmentPlans     TreatmentPlan[]
+  images             DentalImage[]
+  invoices           Invoice[]
+  clinicalNotes      ClinicalNote[]
+  aiAnalyses         AIAnalysis[]
+  status             PatientStatus    @default(ACTIVE)
+  lastVisit          DateTime?
+  nextAppointment    DateTime?
+  notes              String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@index([practiceId, lastName, firstName])
+  @@index([phone])
+}
+
+enum PatientStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+model MedicalHistory {
+  id                String    @id @default(cuid())
+  patientId         String    @unique
+  patient           Patient   @relation(fields: [patientId], references: [id])
+  allergies         Json      @default("[]")
+  medications       Json      @default("[]")
+  conditions        Json      @default("[]")
+  bloodType         String?
+  isPregnant        Boolean   @default(false)
+  smokingStatus     String?
+  alcoholUse        String?
+  previousSurgeries Json      @default("[]")
+  familyHistory     Json      @default("[]")
+  lastPhysical      DateTime?
+  notes             String?
+  updatedAt         DateTime  @updatedAt
+}
+
+model InsuranceInfo {
+  id                 String    @id @default(cuid())
+  patientPrimaryId   String?   @unique
+  patientPrimary     Patient?  @relation("PrimaryInsurance", fields: [patientPrimaryId], references: [id])
+  patientSecondaryId String?   @unique
+  patientSecondary   Patient?  @relation("SecondaryInsurance", fields: [patientSecondaryId], references: [id])
+  company            String
+  planName           String?
+  groupNumber        String?
+  memberId           String
+  subscriberName     String
+  subscriberDob      DateTime?
+  relationship       String    @default("self")
+  effectiveDate      DateTime?
+  expirationDate     DateTime?
+  annualMax          Float?
+  remainingBenefit   Float?
+  deductible         Float?
+  deductibleMet      Float?    @default(0)
+  coveragePercent    Json      @default("{\"preventive\": 100, \"basic\": 80, \"major\": 50, \"orthodontic\": 50}")
+  verifiedAt         DateTime?
+  notes              String?
+}
+
+// ═══════════════════ DENTAL CHARTING ═══════════════════
+
+model ToothCondition {
+  id          String      @id @default(cuid())
+  patientId   String
+  patient     Patient     @relation(fields: [patientId], references: [id])
+  toothNumber Int
+  conditions  Json        @default("[]")
+  status      ToothStatus @default(PRESENT)
+  isDeciduous Boolean     @default(false)
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([patientId, toothNumber])
+  @@index([patientId])
+}
+
+enum ToothStatus {
+  PRESENT
+  MISSING
+  IMPACTED
+  UNERUPTED
+  IMPLANT
+  PONTIC
+}
+
+model PerioReading {
+  id         String   @id @default(cuid())
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  date       DateTime @default(now())
+  providerId String
+  readings   Json
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  @@index([patientId, date])
+}
+
+// ═══════════════════ APPOINTMENTS ═══════════════════
+
+model Appointment {
+  id            String            @id @default(cuid())
+  patientId     String
+  patient       Patient           @relation(fields: [patientId], references: [id])
+  providerId    String
+  provider      Provider          @relation(fields: [providerId], references: [id])
+  chairId       String?
+  chair         Chair?            @relation(fields: [chairId], references: [id])
+  startTime     DateTime
+  endTime       DateTime
+  duration      Int
+  type          AppointmentType
+  status        AppointmentStatus @default(SCHEDULED)
+  reason        String?
+  procedures    String[]
+  notes         String?
+  confirmedAt   DateTime?
+  checkedInAt   DateTime?
+  seatedAt      DateTime?
+  completedAt   DateTime?
+  reminderSent  Boolean           @default(false)
+  isRecurring   Boolean           @default(false)
+  recurringRule String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([providerId, startTime])
+  @@index([patientId, startTime])
+}
+
+enum AppointmentType {
+  EXAM
+  CLEANING
+  FILLING
+  CROWN
+  ROOT_CANAL
+  EXTRACTION
+  IMPLANT
+  COSMETIC
+  EMERGENCY
+  CONSULTATION
+  FOLLOW_UP
+  OTHER
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CHECKED_IN
+  IN_CHAIR
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+// ═══════════════════ TREATMENTS ═══════════════════
+
+model TreatmentPlan {
+  id           String              @id @default(cuid())
+  patientId    String
+  patient      Patient             @relation(fields: [patientId], references: [id])
+  name         String
+  status       TreatmentPlanStatus @default(PROPOSED)
+  items        TreatmentPlanItem[]
+  totalFee     Float               @default(0)
+  insuranceEst Float               @default(0)
+  patientEst   Float               @default(0)
+  presentedAt  DateTime?
+  acceptedAt   DateTime?
+  notes        String?
+  aiGenerated  Boolean             @default(false)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([patientId])
+}
+
+enum TreatmentPlanStatus {
+  PROPOSED
+  PRESENTED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  DECLINED
+}
+
+model TreatmentPlanItem {
+  id              String        @id @default(cuid())
+  treatmentPlanId String
+  treatmentPlan   TreatmentPlan @relation(fields: [treatmentPlanId], references: [id], onDelete: Cascade)
+  toothNumber     Int?
+  surfaces        String[]
+  cdtCode         String
+  description     String
+  fee             Float
+  insurancePays   Float         @default(0)
+  patientPays     Float         @default(0)
+  priority        Int           @default(1)
+  status          String        @default("pending")
+  sortOrder       Int           @default(0)
+}
+
+model Treatment {
+  id             String   @id @default(cuid())
+  patientId      String
+  patient        Patient  @relation(fields: [patientId], references: [id])
+  providerId     String
+  provider       Provider @relation(fields: [providerId], references: [id])
+  date           DateTime @default(now())
+  toothNumber    Int?
+  surfaces       String[]
+  cdtCode        String
+  description    String
+  diagnosisCodes String[]
+  fee            Float
+  notes          String?
+  status         String   @default("completed")
+  invoiceId      String?
+  invoice        Invoice? @relation(fields: [invoiceId], references: [id])
+  createdAt      DateTime @default(now())
+
+  @@index([patientId, date])
+}
+
+model ClinicalNote {
+  id         String    @id @default(cuid())
+  patientId  String
+  patient    Patient   @relation(fields: [patientId], references: [id])
+  providerId String
+  provider   Provider  @relation(fields: [providerId], references: [id])
+  date       DateTime  @default(now())
+  type       String    @default("progress")
+  subjective String?
+  objective  String?
+  assessment String?
+  plan       String?
+  vitals     Json?
+  aiAssisted Boolean   @default(false)
+  signedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([patientId, date])
+}
+
+// ═══════════════════ IMAGING & AI ═══════════════════
+
+model DentalImage {
+  id           String       @id @default(cuid())
+  patientId    String
+  patient      Patient      @relation(fields: [patientId], references: [id])
+  type         ImageType
+  filePath     String
+  fileName     String
+  fileSize     Int
+  mimeType     String
+  toothNumbers Int[]
+  dateTaken    DateTime     @default(now())
+  notes        String?
+  aiAnalyses   AIAnalysis[]
+  annotations  Json?
+  createdAt    DateTime     @default(now())
+
+  @@index([patientId, type])
+}
+
+enum ImageType {
+  PERIAPICAL
+  BITEWING
+  PANORAMIC
+  CEPHALOMETRIC
+  CBCT
+  INTRAORAL_PHOTO
+  EXTRAORAL_PHOTO
+  OTHER
+}
+
+model AIAnalysis {
+  id         String       @id @default(cuid())
+  patientId  String
+  patient    Patient      @relation(fields: [patientId], references: [id])
+  imageId    String?
+  image      DentalImage? @relation(fields: [imageId], references: [id])
+  type       String
+  input      Json
+  output     Json
+  confidence Float?
+  findings   Json?
+  reviewedBy String?
+  reviewedAt DateTime?
+  accepted   Boolean      @default(false)
+  model      String
+  tokensUsed Int?
+  costUsd    Float?
+  createdAt  DateTime     @default(now())
+
+  @@index([patientId])
+  @@index([imageId])
+}
+
+// ═══════════════════ BILLING & INSURANCE ═══════════════════
+
+model FeeScheduleItem {
+  id          String   @id @default(cuid())
+  practiceId  String
+  practice    Practice @relation(fields: [practiceId], references: [id])
+  cdtCode     String
+  description String
+  fee         Float
+  category    String
+  updatedAt   DateTime @updatedAt
+
+  @@unique([practiceId, cdtCode])
+}
+
+model Invoice {
+  id               String          @id @default(cuid())
+  patientId        String
+  patient          Patient         @relation(fields: [patientId], references: [id])
+  invoiceNumber    String          @unique
+  date             DateTime        @default(now())
+  dueDate          DateTime
+  treatments       Treatment[]
+  subtotal         Float
+  taxAmount        Float           @default(0)
+  discount         Float           @default(0)
+  total            Float
+  insurancePortion Float           @default(0)
+  patientPortion   Float
+  status           InvoiceStatus   @default(PENDING)
+  payments         Payment[]
+  insuranceClaim   InsuranceClaim?
+  notes            String?
+  pdfPath          String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([patientId])
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  VOID
+  WRITE_OFF
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  invoiceId String
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id])
+  amount    Float
+  method    PaymentMethod
+  reference String?
+  date      DateTime      @default(now())
+  notes     String?
+
+  @@index([invoiceId])
+  @@index([date])
+}
+
+enum PaymentMethod {
+  CASH
+  CHECK
+  CREDIT_CARD
+  DEBIT_CARD
+  INSURANCE
+  FINANCING
+  OTHER
+}
+
+model InsuranceClaim {
+  id             String      @id @default(cuid())
+  invoiceId      String      @unique
+  invoice        Invoice     @relation(fields: [invoiceId], references: [id])
+  claimNumber    String?
+  status         ClaimStatus @default(DRAFTED)
+  submittedAt    DateTime?
+  paidAt         DateTime?
+  amountClaimed  Float
+  amountApproved Float?
+  amountPaid     Float?
+  denialReason   String?
+  preAuthNumber  String?
+  preAuthLetter  String?
+  attachments    String[]
+  followUpDate   DateTime?
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([status])
+  @@index([followUpDate])
+}
+
+enum ClaimStatus {
+  DRAFTED
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  PARTIALLY_APPROVED
+  DENIED
+  APPEALED
+  PAID
+  WRITE_OFF
+}
+
+// ═══════════════════ AUDIT & SYSTEM ═══════════════════
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  providerId String?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  action     String
+  resource   String
+  resourceId String
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime  @default(now())
+
+  @@index([providerId, timestamp])
+  @@index([resource, resourceId])
+  @@index([timestamp])
+}
